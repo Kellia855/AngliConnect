@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Assign Role to {{ member.first_name }} {{ member.last_name }}</h1>
+
+<form method="post" class="form">
+    {% csrf_token %}
+    
+    <label>Select Role</label>
+    {{ form.role }}
+    
+    <label>Start Date</label>
+    {{ form.start_date }}
+    
+    <label>End Date (Optional)</label>
+    {{ form.end_date }}
+    
+    <button type="submit">Assign Role</button>
+</form>
+
+<p><a href="{% url 'church:member_roles' member_id %}">View Current Roles</a></p>
+{% endblock %}

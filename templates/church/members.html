@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Members List</h1>
+
+<table>
+    <tr>
+        <th>Full Name</th>
+        <th>Phone</th>
+        <th>Diocese</th>
+        <th>Parish</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for member in members %}
+    <tr>
+        <td>{{ member.first_name }} {{ member.last_name }}</td>
+        <td>{{ member.phone }}</td>
+        <td>{{ member.parish.diocese.name }}</td>
+        <td>{{ member.parish.name }}</td>
+        <td>
+            <a href="{% url 'church:member_roles' member.id %}">View Roles</a> |
+            <a href="{% url 'church:assign_role' member.id %}">Assign Role</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if not members %}
+<p>No members found. <a href="{% url 'church:add_member' %}">Add the first member</a>.</p>
+{% endif %}
+{% endblock %}

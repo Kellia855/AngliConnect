@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Member</h1>
+
+<form method="post" class="form">
+    {% csrf_token %}
+    
+    <label>First Name</label>
+    {{ form.first_name }}
+    
+    <label>Last Name</label>
+    {{ form.last_name }}
+    
+    <label>Phone Number</label>
+    {{ form.phone }}
+    
+    <label>Diocese</label>
+    {{ form.diocese }}
+    
+    <label>Parish</label>
+    {{ form.parish }}
+    
+    <button type="submit">Save Member</button>
+</form>
+
+<script>
+document.getElementById('id_diocese').addEventListener('change', function() {
+    const dioceseId = this.value;
+    const parishSelect = document.getElementById('id_parish');
+    
+    // Clear current options
+    parishSelect.innerHTML = '<option value="">-- Select Parish --</option>';
+    
+    if (dioceseId) {
+        // Fetch parishes for selected diocese
+        fetch(`/ajax/load-parishes/?diocese_id=${dioceseId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(parish => {
+                    const option = document.createElement('option');
+                    option.value = parish.id;
+                    option.textContent = parish.name;
+                    parishSelect.appendChild(option);
+                });
+            });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Roles for {{ member.first_name }} {{ member.last_name }}</h1>
+
+<a href="{% url 'church:assign_role' member_id %}" class="button">Assign New Role</a>
+
+<table>
+    <tr>
+        <th>Role</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Status</th>
+    </tr>
+
+    {% for role_assignment in roles %}
+    <tr>
+        <td>{{ role_assignment.role.name }}</td>
+        <td>{{ role_assignment.start_date }}</td>
+        <td>{{ role_assignment.end_date|default:"Ongoing" }}</td>
+        <td>{% if not role_assignment.end_date %}Active{% else %}Completed{% endif %}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if not roles %}
+<p>No roles assigned yet. <a href="{% url 'church:assign_role' member_id %}">Assign a role</a>.</p>
+{% endif %}
+
+<p><a href="{% url 'church:members' %}">Back to Members</a></p>
+{% endblock %}

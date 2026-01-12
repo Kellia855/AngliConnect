@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Welcome</h1>
+
+<p>
+    This system helps manage church members, parishes, and roles
+    in a simple and user-friendly way.
+</p>
+
+<div class="cards">
+    <a class="card" href="{% url 'church:add_member' %}">
+       Add New Member
+    </a>
+
+    <a class="card" href="{% url 'church:members' %}">
+        View Members
+    </a>
+    
+    <a class="card" href="{% url 'church:roles' %}">
+        View Roles
+    </a>
+
+    <a class="card" href="{% url 'church:add_role' %}">
+        Add New Role
+    </a>
+</div>
+{% endblock %}

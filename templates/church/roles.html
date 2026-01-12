@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Roles List</h1>
+
+<a href="{% url 'church:add_role' %}" class="button">Add New Role</a>
+
+<table>
+    <tr>
+        <th>Role Name</th>
+    </tr>
+
+    {% for role in roles %}
+    <tr>
+        <td>{{ role.name }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if not roles %}
+<p>No roles found. <a href="{% url 'church:add_role' %}">Add the first role</a>.</p>
+{% endif %}
+{% endblock %}

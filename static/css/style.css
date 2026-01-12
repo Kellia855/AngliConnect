@@ -1,0 +1,108 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f6f6f6;
+}
+
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+nav {
+    background-color: #ecf0f1;
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+main {
+    padding: 30px;
+}
+
+footer {
+    background-color: #ddd;
+    text-align: center;
+    padding: 10px;
+    margin-top: 40px;
+}
+
+.cards {
+    margin-top: 30px;
+}
+
+.card {
+    display: inline-block;
+    padding: 20px;
+    margin-right: 20px;
+    background-color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.card:hover {
+    background-color: #f0f0f0;
+}
+
+.form {
+    max-width: 400px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 6px;
+}
+
+.form label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.form input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+.form button {
+    margin-top: 20px;
+    padding: 10px;
+    width: 100%;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.form button:hover {
+    background-color: #34495e;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+table th {
+    background-color: #ecf0f1;
+}

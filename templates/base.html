@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Church Digital System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header>
+    <h2>Anglican Church Digital System</h2>
+</header>
+
+<nav>
+    <a href="{% url 'church:index' %}">Home</a>
+    <a href="{% url 'church:members' %}">Members</a>
+    <a href="{% url 'church:add_member' %}">Add Member</a>
+    <a href="{% url 'church:roles' %}">Roles</a>
+    <a href="{% url 'church:add_role' %}">Add Role</a>
+</nav>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <p>&copy; 2026 Anglican Church</p>
+</footer>
+
+</body>
+</html>
