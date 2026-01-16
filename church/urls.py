@@ -5,6 +5,8 @@ app_name = 'church'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/export/', views.export_dashboard_excel, name='export_dashboard'),
     path('members/', views.MemberListView.as_view(), name='members'),
     path('add-member/', views.MemberCreateView.as_view(), name='add_member'),
     path('ajax/load-parishes/', views.load_parishes, name='ajax_load_parishes'),

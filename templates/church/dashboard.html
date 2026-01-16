@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Church Management Dashboard</h1>
+
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'church:export_dashboard' %}" class="button" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+        Export to Excel
+    </a>
+</div>
+
+<div class="stats-overview">
+    <div class="stat-card">
+        <h3>{{ total_members }}</h3>
+        <p>Total Members</p>
+    </div>
+    
+    <div class="stat-card">
+        <h3>{{ total_dioceses }}</h3>
+        <p>Dioceses</p>
+    </div>
+    
+    <div class="stat-card">
+        <h3>{{ total_parishes }}</h3>
+        <p>Parishes</p>
+    </div>
+    
+    <div class="stat-card">
+        <h3>{{ total_roles }}</h3>
+        <p>Roles</p>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="charts-section">
+    <div class="chart-container">
+        <h2>Members by Diocese</h2>
+        <canvas id="dioceseChart"></canvas>
+    </div>
+    
+    <div class="chart-container">
+        <h2>Top Parishes by Members</h2>
+        <canvas id="parishChart"></canvas>
+    </div>
+</div>
+
+<div class="reports">
+    <div class="report-section">
+        <h2>Members by Diocese</h2>
+        <table>
+            <tr>
+                <th>Diocese</th>
+                <th>Number of Members</th>
+                <th>Number of Parishes</th>
+            </tr>
+            {% for stat in diocese_stats %}
+            <tr>
+                <td>{{ stat.name }}</td>
+                <td>{{ stat.member_count }}</td>
+                <td>{{ stat.parish_count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="report-section">
+        <h2>Members by Parish</h2>
+        <table>
+            <tr>
+                <th>Parish</th>
+                <th>Diocese</th>
+                <th>Members</th>
+            </tr>
+            {% for stat in parish_stats %}
+            <tr>
+                <td>{{ stat.name }}</td>
+                <td>{{ stat.diocese__name }}</td>
+                <td>{{ stat.member_count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="report-section">
+        <h2>Active Role Assignments</h2>
+        <table>
+            <tr>
+                <th>Role</th>
+                <th>Active Assignments</th>
+            </tr>
+            {% for stat in role_stats %}
+            <tr>
+                <td>{{ stat.name }}</td>
+                <td>{{ stat.assignment_count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="report-section">
+        <h2>Recent Role Assignments</h2>
+        <table>
+            <tr>
+                <th>Member</th>
+                <th>Role</th>
+                <th>Start Date</th>
+                <th>Status</th>
+            </tr>
+            {% for assignment in recent_assignments %}
+            <tr>
+                <td>{{ assignment.member.get_full_name }}</td>
+                <td>{{ assignment.role.name }}</td>
+                <td>{{ assignment.start_date }}</td>
+                <td>{% if not assignment.end_date %}Active{% else %}Ended{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+<style>
+.stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 2.5em;
+    margin: 0;
+    color: #2c5f8d;
+}
+
+.stat-card p {
+    margin: 10px 0 0 0;
+    color: #666;
+}
+
+.reports {
+    margin-top: 30px;
+}
+
+.report-section {
+    margin-bottom: 40px;
+}
+
+.report-section h2 {
+    color: #2c5f8d;
+    border-bottom: 2px solid #2c5f8d;
+    padding-bottom: 10px;
+}
+
+.charts-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+    margin: 30px 0;
+}
+
+.chart-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-container h2 {
+    color: #2c5f8d;
+    margin-top: 0;
+    font-size: 1.3em;
+}
+</style>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Diocese Chart
+const dioceseCtx = document.getElementById('dioceseChart').getContext('2d');
+const dioceseChart = new Chart(dioceseCtx, {
+    type: 'bar',
+    data: {
+        labels: [{% for stat in diocese_stats %}'{{ stat.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Number of Members',
+            data: [{% for stat in diocese_stats %}{{ stat.member_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+            backgroundColor: 'rgba(44, 95, 141, 0.8)',
+            borderColor: 'rgba(44, 95, 141, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+
+// Parish Chart (Top 10)
+const parishCtx = document.getElementById('parishChart').getContext('2d');
+const parishChart = new Chart(parishCtx, {
+    type: 'horizontalBar',
+    data: {
+        labels: [{% for stat in parish_stats|slice:":10" %}'{{ stat.name|truncatechars:30 }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Number of Members',
+            data: [{% for stat in parish_stats|slice:":10" %}{{ stat.member_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+            backgroundColor: 'rgba(75, 192, 192, 0.8)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+            x: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
