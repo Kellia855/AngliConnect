@@ -18,7 +18,15 @@
         <td>{{ role_assignment.role.name }}</td>
         <td>{{ role_assignment.start_date }}</td>
         <td>{{ role_assignment.end_date|default:"Ongoing" }}</td>
-        <td>{% if not role_assignment.end_date %}Active{% else %}Completed{% endif %}</td>
+        <td>
+            {% if role_assignment.start_date > today %}
+                Upcoming
+            {% elif role_assignment.end_date and role_assignment.end_date < today %}
+                Completed
+            {% else %}
+                Active
+            {% endif %}
+        </td>
     </tr>
     {% endfor %}
 </table>

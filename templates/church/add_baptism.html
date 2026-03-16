@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Baptism Record</h1>
+
+<form method="post" class="form">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div style="background: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <label>Member</label>
+    {{ form.member }}
+
+    <label>Baptism Date</label>
+    {{ form.baptism_date }}
+
+    <label>Parish</label>
+    {{ form.parish }}
+
+    <label>Church Name (Optional)</label>
+    {{ form.church_name }}
+
+    <label>Officiating Priest</label>
+    {{ form.officiating_priest }}
+
+    <h3 style="margin-top: 20px; color: #2c5f8d;">Godparents</h3>
+
+    <label>Godparent 1 Name</label>
+    {{ form.godparent1_name }}
+    <label>Godparent 1 Gender</label>
+    {{ form.godparent1_gender }}
+
+    <label>Godparent 2 Name</label>
+    {{ form.godparent2_name }}
+    <label>Godparent 2 Gender</label>
+    {{ form.godparent2_gender }}
+
+    <label>Godparent 3 Name</label>
+    {{ form.godparent3_name }}
+    <label>Godparent 3 Gender</label>
+    {{ form.godparent3_gender }}
+
+    <label>Notes (Optional)</label>
+    {{ form.notes }}
+
+    <button type="submit">Save Baptism</button>
+</form>
+
+<p><a href="{% url 'church:baptism_list' %}">Back to Baptism Records</a></p>
+{% endblock %}

@@ -1,5 +1,15 @@
 from django import forms
-from .models import Member, Role, MemberRole, Parish, Diocese
+from .models import (
+    Member,
+    Role,
+    MemberRole,
+    Parish,
+    Diocese,
+    Baptism,
+    Confirmation,
+    Marriage,
+)
+import re
 
 
 class MemberForm(forms.ModelForm):
@@ -12,13 +22,32 @@ class MemberForm(forms.ModelForm):
     
     class Meta:
         model = Member
-        fields = ['first_name', 'last_name', 'phone', 'diocese', 'parish']
+        fields = ['first_name', 'last_name', 'gender', 'date_of_birth', 'phone', 'photo', 'diocese', 'parish']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'gender': forms.Select(attrs={'class': 'form-control'}),
+            'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'photo': forms.FileInput(attrs={'class': 'form-control'}),
             'parish': forms.Select(attrs={'class': 'form-control', 'id': 'id_parish'}),
         }
+    
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name')
+        if first_name:
+            # Check if name contains only letters (no spaces, numbers, or symbols)
+            if not re.match(r"^[a-zA-Z]+$", first_name):
+                raise forms.ValidationError('First name can only contain letters.')
+        return first_name
+    
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get('last_name')
+        if last_name:
+            # Check if name contains only letters (no spaces, numbers, or symbols)
+            if not re.match(r"^[a-zA-Z]+$", last_name):
+                raise forms.ValidationError('Last name can only contain letters.')
+        return last_name
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -58,4 +87,89 @@ class MemberRoleForm(forms.ModelForm):
             'role': forms.Select(attrs={'class': 'form-control'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+
+class BaptismForm(forms.ModelForm):
+    class Meta:
+        model = Baptism
+        fields = [
+            'member',
+            'baptism_date',
+            'parish',
+            'church_name',
+            'officiating_priest',
+            'godparent1_name',
+            'godparent1_gender',
+            'godparent2_name',
+            'godparent2_gender',
+            'godparent3_name',
+            'godparent3_gender',
+            'notes',
+        ]
+        widgets = {
+            'member': forms.Select(attrs={'class': 'form-control'}),
+            'baptism_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'parish': forms.Select(attrs={'class': 'form-control'}),
+            'church_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'officiating_priest': forms.TextInput(attrs={'class': 'form-control'}),
+            'godparent1_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'godparent1_gender': forms.Select(attrs={'class': 'form-control'}),
+            'godparent2_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'godparent2_gender': forms.Select(attrs={'class': 'form-control'}),
+            'godparent3_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'godparent3_gender': forms.Select(attrs={'class': 'form-control'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+
+class ConfirmationForm(forms.ModelForm):
+    class Meta:
+        model = Confirmation
+        fields = [
+            'member',
+            'confirmation_date',
+            'parish',
+            'church_name',
+            'confirming_bishop',
+            'confirmation_verse',
+            'notes',
+        ]
+        widgets = {
+            'member': forms.Select(attrs={'class': 'form-control'}),
+            'confirmation_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'parish': forms.Select(attrs={'class': 'form-control'}),
+            'church_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'confirming_bishop': forms.TextInput(attrs={'class': 'form-control'}),
+            'confirmation_verse': forms.TextInput(attrs={'class': 'form-control'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+
+class MarriageForm(forms.ModelForm):
+    class Meta:
+        model = Marriage
+        fields = [
+            'groom',
+            'bride',
+            'marriage_date',
+            'parish',
+            'church_name',
+            'officiating_priest',
+            'witness1_name',
+            'witness2_name',
+            'license_details',
+            'notes',
+        ]
+        widgets = {
+            'groom': forms.Select(attrs={'class': 'form-control'}),
+            'bride': forms.Select(attrs={'class': 'form-control'}),
+            'marriage_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'parish': forms.Select(attrs={'class': 'form-control'}),
+            'church_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'officiating_priest': forms.TextInput(attrs={'class': 'form-control'}),
+            'witness1_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'witness2_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'license_details': forms.TextInput(attrs={'class': 'form-control'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }

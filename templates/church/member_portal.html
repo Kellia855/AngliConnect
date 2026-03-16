@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
+        {% if member.photo %}
+            <img src="{{ member.photo.url }}" alt="{{ member.get_full_name }}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #2c5f8d;">
+        {% else %}
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: #28a745; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 32px; border: 3px solid #2c5f8d;">
+                {{ member.first_name.0|upper }}
+            </div>
+        {% endif %}
+        <div>
+            <h1 style="color: #2c5f8d; margin: 0 0 5px 0;">Welcome, {{ member.get_full_name }}!</h1>
+            <p style="color: #666; margin: 0;">Parish: {{ member.parish.name }} | Diocese: {{ member.parish.diocese.name }}</p>
+        </div>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin-top: 30px;">
+        
+        <!-- My Certificates Section -->
+        <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #2c5f8d; margin-top: 0; border-bottom: 2px solid #2c5f8d; padding-bottom: 10px;">My Certificates</h2>
+            
+            {% if baptism %}
+            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+                <h3 style="margin: 0 0 10px 0; color: #2c5f8d; font-size: 1.1em;">Baptism</h3>
+                <p style="margin: 5px 0; color: #666;"><strong>Date:</strong> {{ baptism.baptism_date|date:"M d, Y" }}</p>
+                <p style="margin: 5px 0; color: #666;"><strong>Certificate #:</strong> {{ baptism.certificate_number }}</p>
+                <p style="margin: 5px 0; color: #666;"><strong>Church:</strong> {{ baptism.church_name }}</p>
+                <a href="{% url 'church:generate_baptism_cert' baptism.id %}" 
+                   style="display: inline-block; margin-top: 10px; padding: 8px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">
+                    Download Certificate
+                </a>
+            </div>
+            {% endif %}
+            
+            {% if confirmation %}
+            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+                <h3 style="margin: 0 0 10px 0; color: #2c5f8d; font-size: 1.1em;">Confirmation</h3>
+                <p style="margin: 5px 0; color: #666;"><strong>Date:</strong> {{ confirmation.confirmation_date|date:"M d, Y" }}</p>
+                <p style="margin: 5px 0; color: #666;"><strong>Certificate #:</strong> {{ confirmation.certificate_number }}</p>
+                <p style="margin: 5px 0; color: #666;"><strong>Bishop:</strong> {{ confirmation.bishop_name }}</p>
+                <a href="{% url 'church:generate_confirmation_cert' confirmation.id %}" 
+                   style="display: inline-block; margin-top: 10px; padding: 8px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">
+                    Download Certificate
+                </a>
+            </div>
+            {% endif %}
+            
+            {% if marriages %}
+                {% for marriage in marriages %}
+                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+                    <h3 style="margin: 0 0 10px 0; color: #2c5f8d; font-size: 1.1em;">Marriage</h3>
+                    <p style="margin: 5px 0; color: #666;"><strong>Date:</strong> {{ marriage.marriage_date|date:"M d, Y" }}</p>
+                    <p style="margin: 5px 0; color: #666;"><strong>Certificate #:</strong> {{ marriage.certificate_number }}</p>
+                    <p style="margin: 5px 0; color: #666;"><strong>Spouse:</strong> 
+                        {% if marriage.bride == member %}
+                            {{ marriage.groom.get_full_name }}
+                        {% else %}
+                            {{ marriage.bride.get_full_name }}
+                        {% endif %}
+                    </p>
+                    <a href="{% url 'church:generate_marriage_cert' marriage.id %}" 
+                       style="display: inline-block; margin-top: 10px; padding: 8px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">
+                        Download Certificate
+                    </a>
+                </div>
+                {% endfor %}
+            {% endif %}
+            
+            {% if not baptism and not confirmation and not marriages %}
+            <p style="color: #999; text-align: center; padding: 30px 0;">No certificates available yet.</p>
+            {% endif %}
+        </div>
+        
+        <!-- My Profile Section -->
+        <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #2c5f8d; margin-top: 0; border-bottom: 2px solid #2c5f8d; padding-bottom: 10px;">My Profile</h2>
+            
+            <div style="margin-bottom: 15px;">
+                <strong style="color: #333;">Name:</strong>
+                <p style="margin: 5px 0 0 0; color: #666;">{{ member.get_full_name }}</p>
+            </div>
+            
+            {% if member.gender %}
+            <div style="margin-bottom: 15px;">
+                <strong style="color: #333;">Gender:</strong>
+                <p style="margin: 5px 0 0 0; color: #666;">{{ member.get_gender_display }}</p>
+            </div>
+            {% endif %}
+            
+            {% if member.date_of_birth %}
+            <div style="margin-bottom: 15px;">
+                <strong style="color: #333;">Date of Birth:</strong>
+                <p style="margin: 5px 0 0 0; color: #666;">{{ member.date_of_birth|date:"M d, Y" }}</p>
+            </div>
+            {% endif %}
+            
+            {% if member.phone %}
+            <div style="margin-bottom: 15px;">
+                <strong style="color: #333;">Phone:</strong>
+                <p style="margin: 5px 0 0 0; color: #666;">{{ member.phone }}</p>
+            </div>
+            {% endif %}
+            
+            <div style="margin-bottom: 15px;">
+                <strong style="color: #333;">Parish:</strong>
+                <p style="margin: 5px 0 0 0; color: #666;">{{ member.parish.name }}</p>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <strong style="color: #333;">Diocese:</strong>
+                <p style="margin: 5px 0 0 0; color: #666;">{{ member.parish.diocese.name }}</p>
+            </div>
+            
+            <!-- My Roles Section -->
+            <h3 style="color: #2c5f8d; margin-top: 30px; margin-bottom: 15px; font-size: 1.2em;">My Roles</h3>
+            
+            {% if member_roles %}
+                {% for mr in member_roles %}
+                <div style="padding: 10px; background: #f8f9fa; border-left: 4px solid #2c5f8d; margin-bottom: 10px;">
+                    <strong style="color: #333;">{{ mr.role.name }}</strong>
+                    <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9em;">
+                        {{ mr.start_date|date:"M Y" }} - 
+                        {% if mr.end_date %}
+                            {{ mr.end_date|date:"M Y" }}
+                        {% else %}
+                            Present
+                        {% endif %}
+                    </p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: #999; font-style: italic;">No roles assigned yet.</p>
+            {% endif %}
+        </div>
+        
+    </div>
+    
+    <div style="margin-top: 30px; padding: 20px; background: #e8f4f8; border-radius: 8px; border-left: 4px solid #2c5f8d;">
+        <h3 style="margin-top: 0; color: #2c5f8d;">Need Help?</h3>
+        <p style="margin: 0; color: #666;">
+            To update your contact information or if you notice any errors, please contact your parish office for assistance.
+        </p>
+    </div>
+</div>
+{% endblock %}

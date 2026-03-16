@@ -14,11 +14,80 @@
 
 <nav>
     <a href="{% url 'church:index' %}">Home</a>
-    <a href="{% url 'church:dashboard' %}">Dashboard</a>
-    <a href="{% url 'church:members' %}">Members</a>
-    <a href="{% url 'church:add_member' %}">Add Member</a>
-    <a href="{% url 'church:roles' %}">Roles</a>
-    <a href="{% url 'church:add_role' %}">Add Role</a>
+    
+    {% if user.is_authenticated %}
+        {% if user.member %}
+            {# Member navigation - limited options #}
+            <a href="{% url 'church:member_portal' %}">My Portal</a>
+            <a href="{% url 'church:verify_certificate' %}">Verify Certificate</a>
+        {% else %}
+            {# Staff navigation - full access #}
+            <a href="{% url 'church:dashboard' %}">Dashboard</a>
+            
+            <div class="nav-dropdown">
+                <a href="javascript:void(0);" class="dropbtn" onclick="toggleDropdown(this)">Members</a>
+                <div class="dropdown-content">
+                    <a href="{% url 'church:members' %}">View Members</a>
+                    <a href="{% url 'church:add_member' %}">Add Member</a>
+                </div>
+            </div>
+            
+            <div class="nav-dropdown">
+                <a href="javascript:void(0);" class="dropbtn" onclick="toggleDropdown(this)">Roles</a>
+                <div class="dropdown-content">
+                    <a href="{% url 'church:roles' %}">View Roles</a>
+                    <a href="{% url 'church:add_role' %}">Add Role</a>
+                </div>
+            </div>
+            
+            <div class="nav-dropdown">
+                <a href="javascript:void(0);" class="dropbtn" onclick="toggleDropdown(this)">Sacraments</a>
+                <div class="dropdown-content">
+                    <a href="{% url 'church:baptism_list' %}">Baptisms</a>
+                    <a href="{% url 'church:confirmation_list' %}">Confirmations</a>
+                    <a href="{% url 'church:marriage_list' %}">Marriages</a>
+                    <a href="{% url 'church:verify_certificate' %}">Verify Certificate</a>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+    
+    {% if user.is_authenticated %}
+    <div class="user-menu-container" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%);">
+        <div class="user-menu-trigger" onclick="toggleUserMenu()" style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px 15px; border-radius: 4px; transition: background 0.3s;">
+            {% if user.member and user.member.photo %}
+                <img src="{{ user.member.photo.url }}" alt="{{ user.username }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+            {% else %}
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: {% if user.member %}#28a745{% else %}#2c5f8d{% endif %}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">
+                    {{ user.username.0|upper }}
+                </div>
+            {% endif %}
+            <span style="color: #2c5f8d; font-weight: bold;">{{ user.get_full_name|default:user.username }}</span>
+            <span style="color: #2c5f8d; font-size: 0.8em;"></span>
+        </div>
+        
+        <div class="user-dropdown" id="userDropdown" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 5px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000;">
+            {% if user.member %}
+                <a href="{% url 'church:member_portal' %}" style="display: block; padding: 12px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; transition: background 0.2s;">
+                    My Portal
+                </a>
+                <a href="{% url 'church:member_profile' user.member.id %}" style="display: block; padding: 12px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; transition: background 0.2s;">
+                    My Profile
+                </a>
+            {% else %}
+                <a href="{% url 'church:dashboard' %}" style="display: block; padding: 12px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; transition: background 0.2s;">
+                    Dashboard
+                </a>
+            {% endif %}
+            <a href="{% url 'church:change_password' %}" style="display: block; padding: 12px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; transition: background 0.2s;">
+                Change Password
+            </a>
+            <a href="{% url 'logout' %}" style="display: block; padding: 12px 20px; color: #d9534f; font-weight: bold; text-decoration: none; border-radius: 0 0 8px 8px; transition: background 0.2s;">
+                Logout
+            </a>
+        </div>
+    </div>
+    {% endif %}
 </nav>
 
 <main>
@@ -28,6 +97,48 @@
 <footer>
     <p>&copy; 2026 Anglican Church</p>
 </footer>
+
+<script>
+function toggleDropdown(btn) {
+  
+    var allDropdowns = document.querySelectorAll('.dropdown-content');
+    var currentDropdown = btn.nextElementSibling;
+    
+    allDropdowns.forEach(function(dropdown) {
+        if (dropdown !== currentDropdown) {
+            dropdown.classList.remove('show');
+        }
+    });
+    
+   
+    currentDropdown.classList.toggle('show');
+}
+
+
+function toggleUserMenu() {
+    var dropdown = document.getElementById('userDropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+}
+
+
+window.onclick = function(event) {
+    
+    if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.querySelectorAll('.dropdown-content');
+        dropdowns.forEach(function(dropdown) {
+            dropdown.classList.remove('show');
+        });
+    }
+    
+   
+    if (!event.target.closest('.user-menu-container')) {
+        var userDropdown = document.getElementById('userDropdown');
+        if (userDropdown) {
+            userDropdown.style.display = 'none';
+        }
+    }
+}
+</script>
 
 </body>
 </html>

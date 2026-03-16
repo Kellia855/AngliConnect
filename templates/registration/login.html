@@ -1,0 +1,322 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Anglican Church of Rwanda</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a3a5c 0%, #2c5f8d 50%, #1a3a5c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #1a3a5c, #2c5f8d);
+            padding: 35px 30px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .login-header img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .login-header .church-name {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .login-header .system-name {
+            font-size: 12px;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
+        }
+
+        .login-body {
+            padding: 35px 30px;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color: #333;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2c5f8d;
+            box-shadow: 0 0 0 3px rgba(44, 95, 141, 0.15);
+        }
+
+        .password-input {
+            padding-right: 52px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #2c5f8d;
+            cursor: pointer;
+            padding: 4px;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .password-toggle:hover {
+            color: #1a3a5c;
+            background: rgba(44, 95, 141, 0.08);
+        }
+
+        .password-toggle:focus {
+            outline: none;
+        }
+
+        .password-toggle svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            accent-color: #2c5f8d;
+            width: 15px;
+            height: 15px;
+        }
+
+        .forgot-link {
+            color: #2c5f8d;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #1a3a5c, #2c5f8d);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn-login:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .login-footer {
+            text-align: center;
+            padding: 15px 30px 25px;
+            color: #999;
+            font-size: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-card">
+
+            <div class="login-header">
+                <img src="{% static 'images/EAR LOGO.png' %}" alt="Church Logo">
+                <div class="church-name">Anglican Church of Rwanda</div>
+                <div class="system-name">Church Management System</div>
+            </div>
+
+            <div class="login-body">
+
+                {% if form.errors %}
+                <div class="alert-error">
+                    <span>&#9888;</span>
+                    <span>Invalid username or password. Please try again.</span>
+                </div>
+                {% endif %}
+
+                {% if next %}
+                    {% if user.is_authenticated %}
+                    <div class="alert-warning">
+                        Your account doesn't have access to this page.
+                    </div>
+                    {% endif %}
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}" id="login-form">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="id_username">Username</label>
+                        <div class="input-wrapper">
+                            <input type="text" name="username" id="id_username" required autofocus placeholder="Enter your username">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_password">Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" id="id_password" class="password-input" required placeholder="Enter your password">
+                            <button type="button" class="password-toggle" id="password-toggle" aria-label="Show password">
+                                <svg id="eye-open" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg id="eye-closed" viewBox="0 0 24 24" aria-hidden="true" style="display: none;">
+                                    <path d="M3 3l18 18"></path>
+                                    <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"></path>
+                                    <path d="M9.88 5.09A9.77 9.77 0 0 1 12 5c7 0 11 7 11 7a21.86 21.86 0 0 1-5.17 5.94"></path>
+                                    <path d="M6.61 6.61A21.83 21.83 0 0 0 1 12s4 7 11 7a10.74 10.74 0 0 0 5.39-1.39"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember_me">
+                            Remember me
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="login-submit">Sign In</button>
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('id_password');
+        const passwordToggle = document.getElementById('password-toggle');
+        const eyeOpen = document.getElementById('eye-open');
+        const eyeClosed = document.getElementById('eye-closed');
+        const loginForm = document.getElementById('login-form');
+        const loginSubmit = document.getElementById('login-submit');
+
+        passwordToggle.addEventListener('click', function () {
+            const isHidden = passwordInput.type === 'password';
+            passwordInput.type = isHidden ? 'text' : 'password';
+            passwordToggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+            eyeOpen.style.display = isHidden ? 'none' : 'block';
+            eyeClosed.style.display = isHidden ? 'block' : 'none';
+        });
+
+        loginForm.addEventListener('submit', function () {
+            loginSubmit.disabled = true;
+            loginSubmit.textContent = 'Signing in...';
+            loginSubmit.style.opacity = '0.75';
+            loginSubmit.style.cursor = 'not-allowed';
+        });
+    </script>
+</body>
+</html>

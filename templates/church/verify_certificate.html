@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Certificate Verification</h1>
+
+<div class="verification-container">
+    <div class="search-box">
+        <h2>Verify a Certificate</h2>
+        <form method="GET" action="{% url 'church:verify_certificate' %}">
+            <div class="form-group">
+                <label for="cert">Certificate Number:</label>
+                <input type="text" id="cert" name="cert" value="{{ cert_number }}" placeholder="Enter certificate number" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="type">Certificate Type:</label>
+                <select id="type" name="type" required>
+                    <option value="">-- Select Type --</option>
+                    <option value="baptism" {% if cert_type == 'baptism' %}selected{% endif %}>Baptism</option>
+                    <option value="confirmation" {% if cert_type == 'confirmation' %}selected{% endif %}>Confirmation</option>
+                    <option value="marriage" {% if cert_type == 'marriage' %}selected{% endif %}>Marriage</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="verify-button">Verify Certificate</button>
+        </form>
+    </div>
+    
+    {% if result %}
+    <div class="verification-result">
+        {% if result.valid %}
+        <div class="result-valid">
+            <h2>Certificate Verified</h2>
+            <div class="cert-details">
+                <p><strong>Certificate Type:</strong> {{ result.type }}</p>
+                
+                {% if result.type == 'Marriage' %}
+                    <p><strong>Bride:</strong> {{ result.bride }}</p>
+                    <p><strong>Groom:</strong> {{ result.groom }}</p>
+                {% else %}
+                    <p><strong>Member:</strong> {{ result.member }}</p>
+                    <p><strong>Parish:</strong> {{ result.parish }}</p>
+                    <p><strong>Diocese:</strong> {{ result.diocese }}</p>
+                {% endif %}
+                
+                <p><strong>Date:</strong> {{ result.date|date:"F d, Y" }}</p>
+                <p><strong>Church:</strong> {{ result.church }}</p>
+                
+                {% if result.type == 'Marriage' %}
+                    <p><strong>Minister:</strong> {{ result.minister }}</p>
+                {% elif result.type == 'Baptism' %}
+                    <p><strong>Minister:</strong> {{ result.minister }}</p>
+                {% else %}
+                    <p><strong>Bishop:</strong> {{ result.bishop }}</p>
+                {% endif %}
+                
+                <p class="verification-stamp">This certificate is authentic and issued by the Anglican Church of Rwanda</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="result-invalid">
+            <h2>Certificate Not Found</h2>
+            <p>The certificate number <strong>{{ cert_number }}</strong> could not be verified.</p>
+            <p>Please check the number and try again, or contact your parish office.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.verification-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.search-box {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.search-box h2 {
+    margin-top: 0;
+    color: #2c5f8d;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.verify-button {
+    background-color: #2c5f8d;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.verify-button:hover {
+    background-color: #1f4563;
+}
+
+.verification-result {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.result-valid {
+    border-left: 5px solid #28a745;
+}
+
+.result-valid h2 {
+    color: #28a745;
+    margin-top: 0;
+}
+
+.result-invalid {
+    border-left: 5px solid #dc3545;
+}
+
+.result-invalid h2 {
+    color: #dc3545;
+    margin-top: 0;
+}
+
+.cert-details p {
+    margin: 12px 0;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.verification-stamp {
+    margin-top: 20px;
+    padding: 15px !important;
+    background: #e8f4f8 !important;
+    border: 2px dashed #2c5f8d;
+    color: #2c5f8d;
+    font-weight: bold;
+    text-align: center;
+}
+</style>
+{% endblock %}

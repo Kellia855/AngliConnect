@@ -29,6 +29,21 @@
         <h3>{{ total_roles }}</h3>
         <p>Roles</p>
     </div>
+    
+    <div class="stat-card">
+        <h3>{{ total_baptisms }}</h3>
+        <p>Baptisms</p>
+    </div>
+    
+    <div class="stat-card">
+        <h3>{{ total_confirmations }}</h3>
+        <p>Confirmations</p>
+    </div>
+    
+    <div class="stat-card">
+        <h3>{{ total_marriages }}</h3>
+        <p>Marriages</p>
+    </div>
 </div>
 
 <!-- Charts Section -->
@@ -112,6 +127,78 @@
                 <td>{{ assignment.role.name }}</td>
                 <td>{{ assignment.start_date }}</td>
                 <td>{% if not assignment.end_date %}Active{% else %}Ended{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+    <div class="report-section">
+        <h2>Recent Baptisms</h2>
+        <table>
+            <tr>
+                <th>Member</th>
+                <th>Date</th>
+                <th>Parish</th>
+                <th>Certificate #</th>
+            </tr>
+            {% for baptism in recent_baptisms %}
+            <tr>
+                <td><a href="{% url 'church:member_profile' baptism.member.id %}">{{ baptism.member.get_full_name }}</a></td>
+                <td>{{ baptism.baptism_date|date:"M d, Y" }}</td>
+                <td>{{ baptism.member.parish.name }}</td>
+                <td>{{ baptism.certificate_number }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: #999;">No recent baptisms</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+    <div class="report-section">
+        <h2>Recent Confirmations</h2>
+        <table>
+            <tr>
+                <th>Member</th>
+                <th>Date</th>
+                <th>Parish</th>
+                <th>Certificate #</th>
+            </tr>
+            {% for confirmation in recent_confirmations %}
+            <tr>
+                <td><a href="{% url 'church:member_profile' confirmation.member.id %}">{{ confirmation.member.get_full_name }}</a></td>
+                <td>{{ confirmation.confirmation_date|date:"M d, Y" }}</td>
+                <td>{{ confirmation.member.parish.name }}</td>
+                <td>{{ confirmation.certificate_number }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: #999;">No recent confirmations</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+    <div class="report-section">
+        <h2>Recent Marriages</h2>
+        <table>
+            <tr>
+                <th>Bride</th>
+                <th>Groom</th>
+                <th>Date</th>
+                <th>Certificate #</th>
+            </tr>
+            {% for marriage in recent_marriages %}
+            <tr>
+                <td><a href="{% url 'church:member_profile' marriage.bride.id %}">{{ marriage.bride.get_full_name }}</a></td>
+                <td><a href="{% url 'church:member_profile' marriage.groom.id %}">{{ marriage.groom.get_full_name }}</a></td>
+                <td>{{ marriage.marriage_date|date:"M d, Y" }}</td>
+                <td>{{ marriage.certificate_number }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: #999;">No recent marriages</td>
             </tr>
             {% endfor %}
         </table>
@@ -219,7 +306,7 @@ const dioceseChart = new Chart(dioceseCtx, {
 // Parish Chart (Top 10)
 const parishCtx = document.getElementById('parishChart').getContext('2d');
 const parishChart = new Chart(parishCtx, {
-    type: 'horizontalBar',
+    type: 'bar',
     data: {
         labels: [{% for stat in parish_stats|slice:":10" %}'{{ stat.name|truncatechars:30 }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
         datasets: [{

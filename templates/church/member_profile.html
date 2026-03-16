@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Member Profile</h1>
+
+<div class="profile-header" style="display: flex; gap: 30px; align-items: start; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px;">
+    {% if member.photo %}
+        <img src="{{ member.photo.url }}" alt="{{ member.get_full_name }}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #2c5f8d;">
+    {% else %}
+        <div style="width: 120px; height: 120px; border-radius: 50%; background: #28a745; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 48px; border: 3px solid #2c5f8d;">
+            {{ member.first_name.0|upper }}
+        </div>
+    {% endif %}
+    <div style="flex: 1;">
+        <h2 style="margin: 0 0 15px 0; color: #2c5f8d;">{{ member.get_full_name }}</h2>
+        <div class="member-info">
+            <p><strong>Gender:</strong> {{ member.get_gender_display }}</p>
+            <p><strong>Date of Birth:</strong> {{ member.date_of_birth|date:"F d, Y"|default:"Not recorded" }}</p>
+            <p><strong>Parish:</strong> {{ member.parish.name }}</p>
+            <p><strong>Diocese:</strong> {{ member.parish.diocese.name }}</p>
+            <p><strong>Phone:</strong> {{ member.phone|default:"Not provided" }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="sacramental-records">
+    <h2>Sacramental Records</h2>
+    
+    <!-- Baptism Section -->
+    <div class="sacrament-section">
+        <h3>Baptism</h3>
+        {% if baptism %}
+        <div class="record-card">
+            <p><strong>Certificate Number:</strong> {{ baptism.certificate_number }}</p>
+            <p><strong>Date:</strong> {{ baptism.baptism_date|date:"F d, Y" }}</p>
+            <p><strong>Church:</strong> {{ baptism.church_name }}</p>
+            <p><strong>Minister:</strong> {{ baptism.minister_name }}</p>
+            
+            <h4>Godparents</h4>
+            <ul>
+                <li>{{ baptism.godparent1_name }} ({{ baptism.get_godparent1_gender_display }})</li>
+                <li>{{ baptism.godparent2_name }} ({{ baptism.get_godparent2_gender_display }})</li>
+                <li>{{ baptism.godparent3_name }} ({{ baptism.get_godparent3_gender_display }})</li>
+            </ul>
+            
+            {% if baptism.notes %}
+            <p><strong>Notes:</strong> {{ baptism.notes }}</p>
+            {% endif %}
+            
+            <div class="certificate-actions">
+                <a href="{% url 'church:generate_baptism_cert' baptism.id %}" class="cert-button" target="_blank">
+                    Download Certificate
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <p class="no-record">No baptism record found.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Confirmation Section -->
+    <div class="sacrament-section">
+        <h3>Confirmation</h3>
+        {% if confirmation %}
+        <div class="record-card">
+            <p><strong>Certificate Number:</strong> {{ confirmation.certificate_number }}</p>
+            <p><strong>Date:</strong> {{ confirmation.confirmation_date|date:"F d, Y" }}</p>
+            <p><strong>Church:</strong> {{ confirmation.church_name }}</p>
+            <p><strong>Bishop:</strong> {{ confirmation.bishop_name }}</p>
+            
+            <h4>Sponsors</h4>
+            <ul>
+                <li>{{ confirmation.sponsor1_name }} ({{ confirmation.get_sponsor1_gender_display }})</li>
+                <li>{{ confirmation.sponsor2_name }} ({{ confirmation.get_sponsor2_gender_display }})</li>
+                <li>{{ confirmation.sponsor3_name }} ({{ confirmation.get_sponsor3_gender_display }})</li>
+                {% if confirmation.sponsor4_name %}
+                <li>{{ confirmation.sponsor4_name }} ({{ confirmation.get_sponsor4_gender_display }})</li>
+                {% endif %}
+            </ul>
+            
+            {% if confirmation.notes %}
+            <p><strong>Notes:</strong> {{ confirmation.notes }}</p>
+            {% endif %}
+            
+            <div class="certificate-actions">
+                <a href="{% url 'church:generate_confirmation_cert' confirmation.id %}" class="cert-button" target="_blank">
+                    📄 Download Certificate
+                </a>
+            </div>
+        </div>
+        </div>
+        {% else %}
+        <p class="no-record">No confirmation record found.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Marriage Section -->
+    <div class="sacrament-section">
+        <h3>Marriage</h3>
+        {% if marriages %}
+            {% for marriage in marriages %}
+            <div class="record-card">
+                <p><strong>Certificate Number:</strong> {{ marriage.certificate_number }}</p>
+                <p><strong>Date:</strong> {{ marriage.marriage_date|date:"F d, Y" }}</p>
+                <p><strong>Church:</strong> {{ marriage.church_name }}</p>
+                <p><strong>Minister:</strong> {{ marriage.minister_name }}</p>
+                
+                <h4>Couple</h4>
+                <p><strong>Bride:</strong> {{ marriage.bride.get_full_name }}</p>
+                <p><strong>Groom:</strong> {{ marriage.groom.get_full_name }}</p>
+                
+                <h4>Witnesses</h4>
+                <ul>
+                    <li>{{ marriage.witness1_name }}</li>
+                    <li>{{ marriage.witness2_name }}</li>
+                </ul>
+                
+                {% if marriage.notes %}
+                <p><strong>Notes:</strong> {{ marriage.notes }}</p>
+                {% endif %}
+                
+                <div class="certificate-actions">
+                    <a href="{% url 'church:generate_marriage_cert' marriage.id %}" class="cert-button" target="_blank">
+                        📄 Download Certificate
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <p class="no-record">No marriage record found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="action-buttons">
+    <a href="{% url 'church:members' %}" class="button">Back to Members</a>
+</div>
+
+<style>
+.profile-header {
+    background: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.profile-header h2 {
+    margin-top: 0;
+    color: #2c5f8d;
+}
+
+.member-info p {
+    margin: 8px 0;
+}
+
+.sacramental-records {
+    margin-top: 30px;
+}
+
+.sacrament-section {
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.sacrament-section h3 {
+    color: #2c5f8d;
+    font-size: 1.5em;
+    margin-bottom: 15px;
+}
+
+.record-card {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.record-card h4 {
+    color: #555;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.record-card ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.record-card ul li {
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.record-card ul li:last-child {
+    border-bottom: none;
+}
+
+.no-record {
+    color: #999;
+    font-style: italic;
+    padding: 10px;
+}
+
+.certificate-actions {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.cert-button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.cert-button:hover {
+    background-color: #218838;
+}
+
+.action-buttons {
+    margin-top: 30px;
+}
+
+.action-buttons .button {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.action-buttons .button:hover {
+    background-color: #5a6268;
+}
+</style>
+{% endblock %}

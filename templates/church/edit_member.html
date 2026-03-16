@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Add Member</h1>
+<h1>Edit Member</h1>
 
 <form method="post" enctype="multipart/form-data" class="form">
     {% csrf_token %}
@@ -33,6 +33,11 @@
     
     <label>Profile Photo (Optional)</label>
     {{ form.photo }}
+    {% if object.photo %}
+        <div style="margin-top: 5px;">
+            <img src="{{ object.photo.url }}" alt="Current photo" style="max-width: 150px; max-height: 150px; border-radius: 4px;">
+        </div>
+    {% endif %}
     
     <label>Diocese</label>
     {{ form.diocese }}
@@ -40,7 +45,8 @@
     <label>Parish</label>
     {{ form.parish }}
     
-    <button type="submit">Save Member</button>
+    <button type="submit">Update Member</button>
+    <a href="{% url 'church:members' %}" class="button" style="background-color: #6c757d; margin-left: 10px;">Cancel</a>
 </form>
 
 <script>

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Marriage Record</h1>
+
+<form method="post" class="form">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div style="background: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <label>Groom</label>
+    {{ form.groom }}
+
+    <label>Bride</label>
+    {{ form.bride }}
+
+    <label>Marriage Date</label>
+    {{ form.marriage_date }}
+
+    <label>Parish</label>
+    {{ form.parish }}
+
+    <label>Church Name (Optional)</label>
+    {{ form.church_name }}
+
+    <label>Officiating Priest</label>
+    {{ form.officiating_priest }}
+
+    <label>Witness 1 Name</label>
+    {{ form.witness1_name }}
+
+    <label>Witness 2 Name</label>
+    {{ form.witness2_name }}
+
+    <label>License Details (Optional)</label>
+    {{ form.license_details }}
+
+    <label>Notes (Optional)</label>
+    {{ form.notes }}
+
+    <button type="submit">Save Marriage</button>
+</form>
+
+<p><a href="{% url 'church:marriage_list' %}">Back to Marriage Records</a></p>
+{% endblock %}

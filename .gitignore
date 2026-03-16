@@ -26,8 +26,4 @@ staticfiles/
 .DS_Store
 Thumbs.db
 
-# Migration data script
-migrate_data.py
 
-# Documentation
-DJANGO_MIGRATION.md

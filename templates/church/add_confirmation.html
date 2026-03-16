@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Confirmation Record</h1>
+
+<form method="post" class="form">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div style="background: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <label>Member</label>
+    {{ form.member }}
+
+    <label>Confirmation Date</label>
+    {{ form.confirmation_date }}
+
+    <label>Parish</label>
+    {{ form.parish }}
+
+    <label>Church Name (Optional)</label>
+    {{ form.church_name }}
+
+    <label>Confirming Bishop</label>
+    {{ form.confirming_bishop }}
+
+    <label>Confirmation Verse (Optional)</label>
+    {{ form.confirmation_verse }}
+
+    <label>Notes (Optional)</label>
+    {{ form.notes }}
+
+    <button type="submit">Save Confirmation</button>
+</form>
+
+<p><a href="{% url 'church:confirmation_list' %}">Back to Confirmation Records</a></p>
+{% endblock %}

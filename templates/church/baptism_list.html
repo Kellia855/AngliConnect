@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Baptism Records</h1>
+
+<div style="margin: 15px 0;">
+    <a href="{% url 'church:add_baptism' %}" class="button" style="background: #2c5f8d; color: white; padding: 10px 16px; border-radius: 4px; text-decoration: none;">+ Add Baptism</a>
+</div>
+
+<!-- Search and Filter Form -->
+<div style="margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 5px;">
+    <form method="get">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end;">
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Search (Name or Certificate #)</label>
+                <input type="text" name="search" placeholder="Search..." 
+                       value="{{ request.GET.search }}" 
+                       style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">From Date</label>
+                <input type="date" name="from_date" 
+                       value="{{ request.GET.from_date }}" 
+                       style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">To Date</label>
+                <input type="date" name="to_date" 
+                       value="{{ request.GET.to_date }}" 
+                       style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div style="display: flex; gap: 5px;">
+                <button type="submit" style="padding: 8px 15px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Filter</button>
+                {% if request.GET.search or request.GET.from_date or request.GET.to_date %}
+                    <a href="{% url 'church:baptism_list' %}" style="padding: 8px 15px; background: #999; color: white; text-decoration: none; border-radius: 4px; display: inline-block; line-height: 1;">Clear</a>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</div>
+
+<table>
+    <tr>
+        <th>Certificate Number</th>
+        <th>Member</th>
+        <th>Date</th>
+        <th>Church</th>
+        <th>Minister</th>
+        <th>Parish</th>
+        <th>Actions</th>
+    </tr>
+    {% for baptism in page_obj %}
+    <tr>
+        <td>{{ baptism.certificate_number }}</td>
+        <td>{{ baptism.member.get_full_name }}</td>
+        <td>{{ baptism.baptism_date|date:"M d, Y" }}</td>
+        <td>{{ baptism.church_name }}</td>
+        <td>{{ baptism.officiating_priest }}</td>
+        <td>{{ baptism.member.parish.name }}</td>
+        <td>
+            <a href="{% url 'church:member_profile' baptism.member.id %}">View Profile</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="7" style="text-align: center; padding: 20px; color: #999;">
+            No baptism records found.
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<div style="margin-top: 20px; text-align: center;">
+    <div style="display: inline-flex; gap: 5px; align-items: center;">
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.from_date %}&from_date={{ request.GET.from_date }}{% endif %}{% if request.GET.to_date %}&to_date={{ request.GET.to_date }}{% endif %}" style="padding: 5px 10px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.from_date %}&from_date={{ request.GET.from_date }}{% endif %}{% if request.GET.to_date %}&to_date={{ request.GET.to_date }}{% endif %}" style="padding: 5px 10px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">Previous</a>
+        {% endif %}
+        
+        <span style="padding: 0 15px;">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+        
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.from_date %}&from_date={{ request.GET.from_date }}{% endif %}{% if request.GET.to_date %}&to_date={{ request.GET.to_date }}{% endif %}" style="padding: 5px 10px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.from_date %}&from_date={{ request.GET.from_date }}{% endif %}{% if request.GET.to_date %}&to_date={{ request.GET.to_date }}{% endif %}" style="padding: 5px 10px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">Last</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
