@@ -2,57 +2,57 @@
 {% load static %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 0 auto;">
+<div class="home-page">
     
     <!-- Hero Section -->
-    <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #2c5f8d 0%, #1a3a54 100%); color: white; border-radius: 12px; margin-bottom: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div class="home-hero">
         <!-- Church Logo -->
-        <div style="margin-bottom: 20px;">
-            <img src="{% static 'images/EAR LOGO.png' %}" alt="Church Logo" style="max-width: 150px; height: auto; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">
+        <div class="home-hero-logo-wrap">
+            <img src="{% static 'images/EAR LOGO.png' %}" alt="Church Logo" class="home-hero-logo">
         </div>
-        <h1 style="font-size: 2.5em; margin: 0 0 15px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Anglican Church Digital System</h1>
-        <p style="font-size: 1.3em; margin: 0; opacity: 0.95;">Managing faith communities with modern technology</p>
+        <h1 class="home-hero-title">Anglican Church Digital System</h1>
+        <p class="home-hero-subtitle">Managing faith communities with modern technology</p>
         {% if user.is_authenticated %}
-            <p style="margin-top: 20px; font-size: 1.1em;">Welcome back, <strong>{{ user.get_full_name|default:user.username }}</strong>!</p>
+            <p class="home-hero-welcome">Welcome back, <strong>{{ user.get_full_name|default:user.username }}</strong>!</p>
         {% endif %}
     </div>
 
     <!-- Quick Actions for Staff -->
     {% if user.is_authenticated and not user.member %}
-    <div style="margin-bottom: 40px;">
-        <h2 style="color: #2c5f8d; border-bottom: 3px solid #2c5f8d; padding-bottom: 10px; margin-bottom: 25px;">
+    <div class="home-section">
+        <h2 class="home-section-title">
             Quick Actions
         </h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-            <a href="{% url 'church:dashboard' %}" style="text-decoration: none; color: inherit;">
-                <div style="background: white; padding: 30px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer;">
-                    <img src="{% static 'images/dashboard.png' %}" alt="Dashboard" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block;">
-                    <h3 style="color: #2c5f8d; margin: 0 0 10px 0;">Dashboard</h3>
-                    <p style="color: #666; margin: 0; font-size: 0.95em;">View analytics and reports</p>
+        <div class="home-actions-grid">
+            <a href="{% url 'church:dashboard' %}" class="action-link">
+                <div class="action-card">
+                    <img src="{% static 'images/dashboard.png' %}" alt="Dashboard" class="action-icon">
+                    <h3 class="action-title">Dashboard</h3>
+                    <p class="action-text">View analytics and reports</p>
                 </div>
             </a>
             
-            <a href="{% url 'church:add_member' %}" style="text-decoration: none; color: inherit;">
-                <div style="background: white; padding: 30px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer;">
-                    <img src="{% static 'images/add.png' %}" alt="Add Member" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block;">
-                    <h3 style="color: #2c5f8d; margin: 0 0 10px 0;">Add Member</h3>
-                    <p style="color: #666; margin: 0; font-size: 0.95em;">Register new church member</p>
+            <a href="{% url 'church:add_member' %}" class="action-link">
+                <div class="action-card">
+                    <img src="{% static 'images/add.png' %}" alt="Add Member" class="action-icon">
+                    <h3 class="action-title">Add Member</h3>
+                    <p class="action-text">Register new church member</p>
                 </div>
             </a>
             
-            <a href="{% url 'church:members' %}" style="text-decoration: none; color: inherit;">
-                <div style="background: white; padding: 30px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer;">
-                    <img src="{% static 'images/view.png' %}" alt="View Members" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block;">
-                    <h3 style="color: #2c5f8d; margin: 0 0 10px 0;">View Members</h3>
-                    <p style="color: #666; margin: 0; font-size: 0.95em;">Browse all members</p>
+            <a href="{% url 'church:members' %}" class="action-link">
+                <div class="action-card">
+                    <img src="{% static 'images/view.png' %}" alt="View Members" class="action-icon">
+                    <h3 class="action-title">View Members</h3>
+                    <p class="action-text">Browse all members</p>
                 </div>
             </a>
             
-            <a href="{% url 'church:baptism_list' %}" style="text-decoration: none; color: inherit;">
-                <div style="background: white; padding: 30px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer;">
-                    <img src="{% static 'images/sacraments.png' %}" alt="Sacraments" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block;">
-                    <h3 style="color: #2c5f8d; margin: 0 0 10px 0;">Sacraments</h3>
-                    <p style="color: #666; margin: 0; font-size: 0.95em;">Manage certificates</p>
+            <a href="{% url 'church:baptism_list' %}" class="action-link">
+                <div class="action-card">
+                    <img src="{% static 'images/sacraments.png' %}" alt="Sacraments" class="action-icon">
+                    <h3 class="action-title">Sacraments</h3>
+                    <p class="action-text">Manage certificates</p>
                 </div>
             </a>
         </div>
@@ -61,24 +61,24 @@
 
     <!-- Quick Actions for Members -->
     {% if user.is_authenticated and user.member %}
-    <div style="margin-bottom: 40px;">
-        <h2 style="color: #2c5f8d; border-bottom: 3px solid #2c5f8d; padding-bottom: 10px; margin-bottom: 25px;">
+    <div class="home-section">
+        <h2 class="home-section-title">
             Quick Access
         </h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-            <a href="{% url 'church:member_portal' %}" style="text-decoration: none; color: inherit;">
-                <div style="background: white; padding: 30px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer;">
-                    <img src="{% static 'images/portal.png' %}" alt="My Portal" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block;">
-                    <h3 style="color: #2c5f8d; margin: 0 0 10px 0;">My Portal</h3>
-                    <p style="color: #666; margin: 0; font-size: 0.95em;">View your certificates and profile</p>
+        <div class="home-actions-grid">
+            <a href="{% url 'church:member_portal' %}" class="action-link">
+                <div class="action-card">
+                    <img src="{% static 'images/portal.png' %}" alt="My Portal" class="action-icon">
+                    <h3 class="action-title">My Portal</h3>
+                    <p class="action-text">View your certificates and profile</p>
                 </div>
             </a>
             
-            <a href="{% url 'church:verify_certificate' %}" style="text-decoration: none; color: inherit;">
-                <div style="background: white; padding: 30px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer;">
-                    <img src="{% static 'images/verify.png' %}" alt="Verify Certificate" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block;">
-                    <h3 style="color: #2c5f8d; margin: 0 0 10px 0;">Verify Certificate</h3>
-                    <p style="color: #666; margin: 0; font-size: 0.95em;">Check certificate authenticity</p>
+            <a href="{% url 'church:verify_certificate' %}" class="action-link">
+                <div class="action-card">
+                    <img src="{% static 'images/verify.png' %}" alt="Verify Certificate" class="action-icon">
+                    <h3 class="action-title">Verify Certificate</h3>
+                    <p class="action-text">Check certificate authenticity</p>
                 </div>
             </a>
         </div>
@@ -86,79 +86,68 @@
     {% endif %}
 
 
-    <div style="background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 40px;">
-        <h2 style="color: #2c5f8d; margin-top: 0; margin-bottom: 25px;">About Our System</h2>
+    <div class="home-about">
+        <h2 class="home-about-title">About Our System</h2>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-            <div>
-                <img src="{% static 'images/church_space.jpg' %}" alt="Church" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                <h3 style="color: #2c5f8d; margin: 0 0 10px 0;">Digital Transformation</h3>
-                <p style="color: #666; line-height: 1.6;">
-                    Modern church management system helping Anglican parishes in Rwanda manage members, sacraments, and certificates efficiently.
+        <div class="home-about-grid">
+            <div class="home-about-card">
+                <img src="{% static 'images/church_space.jpg' %}" alt="Church" class="home-about-image">
+                <h3 class="home-about-subtitle">Digital Transformation</h3>
+                <p class="home-about-text">
+                    Modern church management system helping Anglican parishes in Rwanda manage members and records efficiently.
                 </p>
             </div>
             
-            <div>
-                <img src="{% static 'images/community_space.jpg' %}" alt="Community" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                <h3 style="color: #2c5f8d; margin: 0 0 10px 0;">Features</h3>
-                <ul style="color: #666; line-height: 1.8; margin: 0; padding-left: 20px;">
-                    <li>Member registration & management</li>
-                    <li>Sacramental records (Baptism, Confirmation, Marriage)</li>
-                    <li>Digital certificate generation with QR codes</li>
+            <div class="home-about-card">
+                <img src="{% static 'images/community_space.jpg' %}" alt="Community" class="home-about-image">
+                <h3 class="home-about-subtitle">Features</h3>
+                <ul class="home-about-list">
+                    <li>Member management</li>
+                    <li>Sacramental records</li>
+                    <li>Digital certificate generation</li>
                     <li>Analytics and reporting</li>
-                    <li>Role assignment and tracking</li>
+                    <li>Role assignment and attendance tracking</li>
                 </ul>
             </div>
         </div>
     </div>
 
     
-    <div style="background: linear-gradient(135deg, #2c5f8d 0%, #1a3a54 100%); color: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 40px;">
-        <h2 style="color: white; margin-top: 0; margin-bottom: 25px; text-align: center;">Contact Us</h2>
+    <div class="home-contact">
+        <h2 class="home-contact-title">Contact Us</h2>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 900px; margin: 0 auto;">
+        <div class="home-contact-grid">
             
-            <div style="text-align: center;">
-                <div style="font-size: 2.5em; margin-bottom: 10px;"></div>
-                <h3 style="margin: 0 0 10px 0; color: white;">Office Hours</h3>
-                <p style="margin: 5px 0; opacity: 0.9;">Monday - Friday</p>
-                <p style="margin: 5px 0; opacity: 0.9;">8:00 AM - 5:00 PM</p>
-                <p style="margin: 5px 0; opacity: 0.9;">Saturday: 9:00 AM - 1:00 PM</p>
+            <div class="home-contact-card">
+                <h3 class="home-contact-subtitle">Office Hours</h3>
+                <p class="home-contact-text">Monday - Friday</p>
+                <p class="home-contact-text">8:00 AM - 5:00 PM</p>
+                <p class="home-contact-text">Saturday: 9:00 AM - 1:00 PM</p>
             </div>
             
             
-            <div style="text-align: center;">
-                <div style="font-size: 2.5em; margin-bottom: 10px;"></div>
-                <h3 style="margin: 0 0 10px 0; color: white;">Get in Touch</h3>
-                <p style="margin: 5px 0; opacity: 0.9;"> +250788622953</p>
-                <p style="margin: 5px 0; opacity: 0.9;">info@anglicanrw.org</p>
+            <div class="home-contact-card">
+                <h3 class="home-contact-subtitle">Get in Touch</h3>
+                <p class="home-contact-text"> +250788622953</p>
+                <p class="home-contact-text">info@anglicanrw.org</p>
             </div>
             
         
-            <div style="text-align: center;">
-                <div style="font-size: 2.5em; margin-bottom: 10px;"></div>
-                <h3 style="margin: 0 0 10px 0; color: white;">Visit Us</h3>
-                <p style="margin: 5px 0; opacity: 0.9;">Kibagabaga,Kigali</p>
-                <p style="margin: 5px 0; opacity: 0.9;">Anglican Church Office</p>
-                <p style="margin: 5px 0; opacity: 0.9;">Trinity House</p>
+            <div class="home-contact-card">
+                <h3 class="home-contact-subtitle">Visit Us</h3>
+                <p class="home-contact-text">Kibagabaga,Kigali</p>
+                <p class="home-contact-text">Anglican Church Office</p>
+                <p class="home-contact-text">Trinity House</p>
             </div>
         </div>
         
         
-        <div style="margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.2); text-align: center;">
-            <p style="margin: 0 0 15px 0; font-size: 1.1em;">Need assistance with the system?</p>
-            <p style="margin: 0; opacity: 0.9;">Contact the parish office during working hours for support with member accounts, certificates, or any other inquiries.</p>
+        <div class="home-contact-help">
+            <p class="home-contact-help-title">Need assistance with the system?</p>
+            <p class="home-contact-help-text">Contact the parish office during working hours for support with member accounts, certificates, or any other inquiries.</p>
         </div>
     </div>
 
 </div>
-
-<style>
-    /* Hover effects for cards */
-    a > div:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-    }
-</style>
 {% endblock %}
 

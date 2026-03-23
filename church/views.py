@@ -24,6 +24,7 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.lib.utils import ImageReader
 import qrcode
 from io import BytesIO
+from datetime import timedelta
 from .models import Parish, Member, Role, MemberRole, Diocese, Baptism, Confirmation, Marriage
 from .forms import (
     MemberForm,
@@ -32,7 +33,10 @@ from .forms import (
     BaptismForm,
     ConfirmationForm,
     MarriageForm,
+    ServiceSessionForm,
+    AttendanceCheckInForm,
 )
+from .models import ServiceSession, AttendanceRecord
 
 
 @method_decorator(never_cache, name='dispatch')
@@ -137,6 +141,12 @@ def dashboard(request):
     total_baptisms = Baptism.objects.count()
     total_confirmations = Confirmation.objects.count()
     total_marriages = Marriage.objects.count()
+
+    today = timezone.localdate()
+    today_sessions = ServiceSession.objects.filter(session_date=today)
+    today_checkins = AttendanceRecord.objects.filter(session__session_date=today)
+    today_checked_in = today_checkins.count()
+    today_late = today_checkins.filter(status='LATE').count()
     
     
     diocese_stats = Diocese.objects.annotate(
@@ -172,6 +182,9 @@ def dashboard(request):
         'total_baptisms': total_baptisms,
         'total_confirmations': total_confirmations,
         'total_marriages': total_marriages,
+        'today_sessions_count': today_sessions.count(),
+        'today_checked_in': today_checked_in,
+        'today_late': today_late,
         'diocese_stats': diocese_stats,
         'parish_stats': parish_stats,
         'role_stats': role_stats,
@@ -186,20 +199,51 @@ def dashboard(request):
 
 @login_required
 def export_dashboard_excel(request):
-    """Export dashboard statistics to Excel"""
+    """Export attendance report """
+    period = request.GET.get('period', 'monthly').lower()
+    today = timezone.localdate()
+
+    if period == 'weekly':
+        period_label = 'Weekly'
+        start_date = today - timedelta(days=6)
+    elif period == 'annually':
+        period_label = 'Annual'
+        start_date = today.replace(month=1, day=1)
+    else:
+        period = 'monthly'
+        period_label = 'Monthly'
+        start_date = today.replace(day=1)
+
+    end_date = today
+
+    sessions_qs = ServiceSession.objects.filter(session_date__range=(start_date, end_date)).order_by('session_date')
+    attendance_qs = AttendanceRecord.objects.filter(session__in=sessions_qs).select_related(
+        'member',
+        'session',
+        'checked_in_by',
+    )
+
+    sessions_in_period = sessions_qs.count()
+    checkins_in_period = attendance_qs.count()
+    late_in_period = attendance_qs.filter(status='LATE').count()
+    present_in_period = attendance_qs.filter(status='PRESENT').count()
+    unique_members_in_period = attendance_qs.values('member_id').distinct().count()
     
     wb = Workbook()
     
     ws_overview = wb.active
-    ws_overview.title = "Overview"
+    ws_overview.title = "Attendance Summary"
     
     
     header_fill = PatternFill(start_color="2C5F8D", end_color="2C5F8D", fill_type="solid")
     header_font = Font(color="FFFFFF", bold=True)
     
-    ws_overview['A1'] = "Church Management System - Overview"
+    ws_overview['A1'] = "Attendance Report"
     ws_overview['A1'].font = Font(bold=True, size=14)
     ws_overview.merge_cells('A1:B1')
+
+    ws_overview['A2'] = f"Report Period: {period_label} ({start_date} to {end_date})"
+    ws_overview.merge_cells('A2:B2')
     
     ws_overview['A3'] = "Metric"
     ws_overview['B3'] = "Count"
@@ -209,76 +253,68 @@ def export_dashboard_excel(request):
     ws_overview['B3'].font = header_font
     
     overview_data = [
-        ["Total Members", Member.objects.count()],
-        ["Total Dioceses", Diocese.objects.count()],
-        ["Total Parishes", Parish.objects.count()],
-        ["Total Roles", Role.objects.count()],
+        ["Attendance Sessions", sessions_in_period],
+        ["Total Check-ins", checkins_in_period],
+        ["Present", present_in_period],
+        ["Late", late_in_period],
+        ["Unique Members Checked In", unique_members_in_period],
     ]
     
     for idx, (metric, value) in enumerate(overview_data, start=4):
         ws_overview[f'A{idx}'] = metric
         ws_overview[f'B{idx}'] = value
-    
-    ws_diocese = wb.create_sheet("Diocese Statistics")
-    ws_diocese['A1'] = "Diocese"
-    ws_diocese['B1'] = "Members"
-    ws_diocese['C1'] = "Parishes"
-    
-    for cell in ['A1', 'B1', 'C1']:
-        ws_diocese[cell].fill = header_fill
-        ws_diocese[cell].font = header_font
-    
-    diocese_stats = Diocese.objects.annotate(
-        member_count=Count('parishes__members'),
-        parish_count=Count('parishes')
-    ).order_by('-member_count')
-    
-    for idx, diocese in enumerate(diocese_stats, start=2):
-        ws_diocese[f'A{idx}'] = diocese.name
-        ws_diocese[f'B{idx}'] = diocese.member_count
-        ws_diocese[f'C{idx}'] = diocese.parish_count
-    
 
-    ws_parish = wb.create_sheet("Parish Statistics")
-    ws_parish['A1'] = "Parish"
-    ws_parish['B1'] = "Diocese"
-    ws_parish['C1'] = "Members"
-    
-    for cell in ['A1', 'B1', 'C1']:
-        ws_parish[cell].fill = header_fill
-        ws_parish[cell].font = header_font
-    
-    parish_stats = Parish.objects.annotate(
-        member_count=Count('members')
-    ).select_related('diocese').order_by('-member_count')
-    
-    for idx, parish in enumerate(parish_stats, start=2):
-        ws_parish[f'A{idx}'] = parish.name
-        ws_parish[f'B{idx}'] = parish.diocese.name
-        ws_parish[f'C{idx}'] = parish.member_count
-    
-    ws_members = wb.create_sheet("All Members")
-    ws_members['A1'] = "First Name"
-    ws_members['B1'] = "Last Name"
-    ws_members['C1'] = "Phone"
-    ws_members['D1'] = "Parish"
-    ws_members['E1'] = "Diocese"
-    
-    for cell in ['A1', 'B1', 'C1', 'D1', 'E1']:
-        ws_members[cell].fill = header_fill
-        ws_members[cell].font = header_font
-    
-    members = Member.objects.select_related('parish__diocese').all()
-    
-    for idx, member in enumerate(members, start=2):
-        ws_members[f'A{idx}'] = member.first_name
-        ws_members[f'B{idx}'] = member.last_name
-        ws_members[f'C{idx}'] = member.phone
-        ws_members[f'D{idx}'] = member.parish.name
-        ws_members[f'E{idx}'] = member.parish.diocese.name
+    ws_period = wb.create_sheet("Session Breakdown")
+    ws_period['A1'] = f"{period_label} Session Breakdown"
+    ws_period['A1'].font = Font(bold=True, size=14)
+    ws_period.merge_cells('A1:E1')
+    ws_period['A2'] = f"Date Range: {start_date} to {end_date}"
+    ws_period.merge_cells('A2:E2')
+
+    session_headers = ['Date', 'Service Type', 'Status', 'Check-ins', 'Late']
+    for col, title in zip(['A', 'B', 'C', 'D', 'E'], session_headers):
+        ws_period[f'{col}4'] = title
+        ws_period[f'{col}4'].fill = header_fill
+        ws_period[f'{col}4'].font = header_font
+
+    session_rows = []
+    for session in sessions_qs:
+        session_total = session.attendance_records.count()
+        session_late = session.attendance_records.filter(status='LATE').count()
+        session_rows.append([
+            session.session_date,
+            session.get_service_type_display(),
+            session.get_status_display(),
+            session_total,
+            session_late,
+        ])
+
+    for idx, row in enumerate(session_rows, start=5):
+        ws_period[f'A{idx}'] = row[0]
+        ws_period[f'B{idx}'] = row[1]
+        ws_period[f'C{idx}'] = row[2]
+        ws_period[f'D{idx}'] = row[3]
+        ws_period[f'E{idx}'] = row[4]
+
+    ws_checkins = wb.create_sheet("Check-in Details")
+    detail_headers = ['Date', 'Service Type', 'Member', 'Parish', 'Status', 'Time', 'Checked In By']
+    for col, title in zip(['A', 'B', 'C', 'D', 'E', 'F', 'G'], detail_headers):
+        ws_checkins[f'{col}1'] = title
+        ws_checkins[f'{col}1'].fill = header_fill
+        ws_checkins[f'{col}1'].font = header_font
+
+    checkins = attendance_qs.order_by('-checked_in_at')
+    for idx, checkin in enumerate(checkins, start=2):
+        ws_checkins[f'A{idx}'] = checkin.session.session_date
+        ws_checkins[f'B{idx}'] = checkin.session.get_service_type_display()
+        ws_checkins[f'C{idx}'] = checkin.member.get_full_name()
+        ws_checkins[f'D{idx}'] = checkin.member.parish.name if checkin.member.parish_id else ''
+        ws_checkins[f'E{idx}'] = checkin.get_status_display()
+        ws_checkins[f'F{idx}'] = checkin.checked_in_at.strftime('%H:%M')
+        ws_checkins[f'G{idx}'] = checkin.checked_in_by.get_username() if checkin.checked_in_by else ''
     
     # Auto-adjust column widths
-    for ws in [ws_overview, ws_diocese, ws_parish, ws_members]:
+    for ws in [ws_overview, ws_period, ws_checkins]:
         for column_cells in ws.columns:
             max_length = 0
             column_letter = None
@@ -299,7 +335,7 @@ def export_dashboard_excel(request):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    response['Content-Disposition'] = 'attachment; filename=church_management_report.xlsx'
+    response['Content-Disposition'] = f'attachment; filename=attendance_report_{period}.xlsx'
     
     wb.save(response)
     return response
@@ -1171,6 +1207,117 @@ def verify_certificate(request):
         'cert_number': cert_number,
         'cert_type': cert_type,
         'result': result
+    })
+
+
+@login_required
+def attendance_sessions(request):
+    if hasattr(request.user, 'member'):
+        return redirect('church:member_portal')
+
+    if request.method == 'POST':
+        form = ServiceSessionForm(request.POST)
+        if form.is_valid():
+            session = form.save(commit=False)
+            session.created_by = request.user
+            session.save()
+            messages.success(request, 'Attendance session created successfully.')
+            return redirect('church:attendance_desk', session_id=session.id)
+    else:
+        form = ServiceSessionForm(initial={'session_date': timezone.localdate()})
+
+    sessions = ServiceSession.objects.select_related('created_by').prefetch_related('attendance_records')[:20]
+
+    session_rows = []
+    for session in sessions:
+        present_count = session.attendance_records.filter(status='PRESENT').count()
+        late_count = session.attendance_records.filter(status='LATE').count()
+        total_count = present_count + late_count
+        session_rows.append({
+            'session': session,
+            'present_count': present_count,
+            'late_count': late_count,
+            'total_count': total_count,
+        })
+
+    return render(request, 'church/attendance_sessions.html', {
+        'form': form,
+        'session_rows': session_rows,
+    })
+
+
+@login_required
+def attendance_desk(request, session_id):
+    if hasattr(request.user, 'member'):
+        return redirect('church:member_portal')
+
+    session = get_object_or_404(ServiceSession, id=session_id)
+
+    if request.method == 'POST':
+        member_id = request.POST.get('member_id')
+        member = get_object_or_404(Member, id=member_id)
+        form = AttendanceCheckInForm(request.POST)
+
+        if form.is_valid():
+            status = form.cleaned_data['status']
+            record, created = AttendanceRecord.objects.get_or_create(
+                session=session,
+                member=member,
+                defaults={
+                    'status': status,
+                    'checked_in_by': request.user,
+                },
+            )
+
+            if created:
+                messages.success(request, f'{member.get_full_name()} checked in as {record.get_status_display()}.')
+            else:
+                record.status = status
+                record.checked_in_by = request.user
+                record.save(update_fields=['status', 'checked_in_by'])
+                messages.info(request, f'{member.get_full_name()} attendance was updated to {record.get_status_display()}.')
+
+            return redirect(f"{reverse('church:attendance_desk', kwargs={'session_id': session.id})}?q={request.GET.get('q', '')}")
+    else:
+        form = AttendanceCheckInForm(initial={'status': 'PRESENT'})
+
+    query = request.GET.get('q', '').strip()
+    members = Member.objects.select_related('parish__diocese').all().order_by('last_name', 'first_name')
+    if query:
+        members = members.filter(
+            Q(first_name__icontains=query)
+            | Q(last_name__icontains=query)
+            | Q(phone__icontains=query)
+            | Q(id__icontains=query)
+        )
+    members = members[:30]
+
+    checked_map = {
+        record.member_id: record
+        for record in AttendanceRecord.objects.filter(session=session).select_related('member', 'checked_in_by')
+    }
+
+    members_with_status = []
+    for member in members:
+        members_with_status.append({
+            'member': member,
+            'record': checked_map.get(member.id),
+        })
+
+    checkins = AttendanceRecord.objects.filter(session=session).select_related('member', 'checked_in_by').order_by('-checked_in_at')[:20]
+
+    present_count = AttendanceRecord.objects.filter(session=session, status='PRESENT').count()
+    late_count = AttendanceRecord.objects.filter(session=session, status='LATE').count()
+
+    return render(request, 'church/attendance_desk.html', {
+        'session': session,
+        'form': form,
+        'query': query,
+        'members_with_status': members_with_status,
+        'checkins': checkins,
+        'present_count': present_count,
+        'late_count': late_count,
+        'total_checked_in': present_count + late_count,
     })
 
 

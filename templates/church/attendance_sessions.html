@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Attendance Sessions</h1>
+
+<div style="display: grid; grid-template-columns: minmax(320px, 420px) 1fr; gap: 24px; align-items: start;">
+    <section style="background: #fff; border: 1px solid #dfe5eb; border-radius: 8px; padding: 18px;">
+        <h2 style="margin-top: 0; color: #2c5f8d;">Create Session</h2>
+        <form method="post" class="form" style="max-width: none; padding: 0;">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div style="margin-bottom: 12px; color: #b42318;">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <label for="id_session_date">Date</label>
+            {{ form.session_date }}
+            {% if form.session_date.errors %}
+                <div class="error">{{ form.session_date.errors }}</div>
+            {% endif %}
+
+            <label for="id_service_type">Service Type</label>
+            {{ form.service_type }}
+            {% if form.service_type.errors %}
+                <div class="error">{{ form.service_type.errors }}</div>
+            {% endif %}
+
+            <label for="id_notes">Notes</label>
+            {{ form.notes }}
+            {% if form.notes.errors %}
+                <div class="error">{{ form.notes.errors }}</div>
+            {% endif %}
+
+            <button type="submit">Create And Open Desk</button>
+        </form>
+    </section>
+
+    <section>
+        <h2 style="color: #2c5f8d; margin-top: 0;">Recent Sessions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Service</th>
+                    <th>Status</th>
+                    <th>Checked In</th>
+                    <th>Late</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in session_rows %}
+                    <tr>
+                        <td>{{ row.session.session_date|date:"M d, Y" }}</td>
+                        <td>{{ row.session.get_service_type_display }}</td>
+                        <td>{{ row.session.get_status_display }}</td>
+                        <td>{{ row.total_count }}</td>
+                        <td>{{ row.late_count }}</td>
+                        <td>
+                            <a class="btn-small" href="{% url 'church:attendance_desk' row.session.id %}">Open Desk</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #6b7280;">No attendance sessions yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% endblock %}

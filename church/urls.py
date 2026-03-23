@@ -30,4 +30,6 @@ urlpatterns = [
     path('certificates/confirmation/<int:confirmation_id>/', views.generate_confirmation_certificate, name='generate_confirmation_cert'),
     path('certificates/marriage/<int:marriage_id>/', views.generate_marriage_certificate, name='generate_marriage_cert'),
     path('verify-certificate/', views.verify_certificate, name='verify_certificate'),
+    path('attendance/sessions/', views.attendance_sessions, name='attendance_sessions'),
+    path('attendance/sessions/<int:session_id>/desk/', views.attendance_desk, name='attendance_desk'),
 ]

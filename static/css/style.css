@@ -229,3 +229,217 @@ button:hover {
 .user-dropdown button:hover {
     background: rgba(217, 83, 79, 0.1);
 }
+
+/* Homepage styles */
+.home-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.home-hero {
+    text-align: center;
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #2c5f8d 0%, #1a3a54 100%);
+    color: white;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.home-hero-logo-wrap {
+    margin-bottom: 20px;
+}
+
+.home-hero-logo {
+    max-width: 150px;
+    height: auto;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+}
+
+.home-hero-title {
+    font-size: 2.5em;
+    margin: 0 0 15px 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.home-hero-subtitle {
+    font-size: 1.3em;
+    margin: 0;
+    opacity: 0.95;
+}
+
+.home-hero-welcome {
+    margin-top: 20px;
+    font-size: 1.1em;
+}
+
+.home-section {
+    margin-bottom: 40px;
+}
+
+.home-section-title {
+    color: #2c5f8d;
+    border-bottom: 3px solid #2c5f8d;
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+}
+
+.home-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.action-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.action-card {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.home-page .action-link > .action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+.action-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 15px;
+    display: block;
+}
+
+.action-title {
+    color: #2c5f8d;
+    margin: 0 0 10px 0;
+}
+
+.action-text {
+    color: #666;
+    margin: 0;
+    font-size: 0.95em;
+}
+
+.home-about {
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+}
+
+.home-about-title {
+    color: #2c5f8d;
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+
+.home-about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.home-about-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.home-about-subtitle {
+    color: #2c5f8d;
+    margin: 0 0 10px 0;
+}
+
+.home-about-text {
+    color: #666;
+    line-height: 1.6;
+}
+
+.home-about-list {
+    color: #666;
+    line-height: 1.8;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.home-contact {
+    background: linear-gradient(135deg, #2c5f8d 0%, #1a3a54 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+}
+
+.home-contact-title {
+    color: white;
+    margin-top: 0;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.home-contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.home-contact-card {
+    text-align: center;
+}
+
+.home-contact-subtitle {
+    margin: 0 0 10px 0;
+    color: white;
+}
+
+.home-contact-text {
+    margin: 5px 0;
+    opacity: 0.9;
+}
+
+.home-contact-help {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    text-align: center;
+}
+
+.home-contact-help-title {
+    margin: 0 0 15px 0;
+    font-size: 1.1em;
+}
+
+.home-contact-help-text {
+    margin: 0;
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .home-hero {
+        padding: 40px 16px;
+    }
+
+    .home-hero-title {
+        font-size: 2em;
+    }
+
+    .home-about,
+    .home-contact {
+        padding: 24px;
+    }
+}

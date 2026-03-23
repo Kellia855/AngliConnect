@@ -8,6 +8,8 @@ from .models import (
     Baptism,
     Confirmation,
     Marriage,
+    ServiceSession,
+    AttendanceRecord,
 )
 import re
 
@@ -172,4 +174,24 @@ class MarriageForm(forms.ModelForm):
             'witness2_name': forms.TextInput(attrs={'class': 'form-control'}),
             'license_details': forms.TextInput(attrs={'class': 'form-control'}),
             'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+
+class ServiceSessionForm(forms.ModelForm):
+    class Meta:
+        model = ServiceSession
+        fields = ['session_date', 'service_type', 'notes']
+        widgets = {
+            'session_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'service_type': forms.Select(attrs={'class': 'form-control'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+        }
+
+
+class AttendanceCheckInForm(forms.ModelForm):
+    class Meta:
+        model = AttendanceRecord
+        fields = ['status']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-control'}),
         }

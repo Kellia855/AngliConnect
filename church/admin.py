@@ -1,7 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Diocese, Parish, Member, Role, MemberRole, Baptism, Confirmation, Marriage
+from .models import (
+    Diocese,
+    Parish,
+    Member,
+    Role,
+    MemberRole,
+    Baptism,
+    Confirmation,
+    Marriage,
+    ServiceSession,
+    AttendanceRecord,
+)
 
 
 @admin.register(Diocese)
@@ -156,3 +167,19 @@ class MarriageAdmin(admin.ModelAdmin):
     search_fields = ['groom__first_name', 'groom__last_name', 'bride__first_name', 'bride__last_name', 'certificate_number']
     date_hierarchy = 'marriage_date'
     readonly_fields = ['certificate_number', 'created_at']
+
+
+@admin.register(ServiceSession)
+class ServiceSessionAdmin(admin.ModelAdmin):
+    list_display = ['session_date', 'service_type', 'status', 'created_by', 'created_at']
+    list_filter = ['session_date', 'service_type', 'status']
+    search_fields = ['notes', 'created_by__username']
+    ordering = ['-session_date', '-created_at']
+
+
+@admin.register(AttendanceRecord)
+class AttendanceRecordAdmin(admin.ModelAdmin):
+    list_display = ['member', 'session', 'status', 'checked_in_at', 'checked_in_by']
+    list_filter = ['status', 'session__session_date', 'session__service_type']
+    search_fields = ['member__first_name', 'member__last_name', 'member__phone']
+    ordering = ['-checked_in_at']

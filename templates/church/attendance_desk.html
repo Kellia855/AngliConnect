@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Attendance Check-In Desk</h1>
+
+<div style="margin-bottom: 16px;">
+    <a href="{% url 'church:attendance_sessions' %}" class="btn-small" style="background: #2c5f8d;">Back To Sessions</a>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
+    <div class="stat-card" style="padding: 14px;">
+        <h3 style="margin: 0; font-size: 1.4em;">{{ session.session_date|date:"M d, Y" }}</h3>
+        <p style="margin: 6px 0 0;">{{ session.get_service_type_display }}</p>
+    </div>
+    <div class="stat-card" style="padding: 14px;">
+        <h3 style="margin: 0; font-size: 1.4em;">{{ total_checked_in }}</h3>
+        <p style="margin: 6px 0 0;">Total Checked In</p>
+    </div>
+    <div class="stat-card" style="padding: 14px;">
+        <h3 style="margin: 0; font-size: 1.4em;">{{ present_count }}</h3>
+        <p style="margin: 6px 0 0;">Present</p>
+    </div>
+    <div class="stat-card" style="padding: 14px;">
+        <h3 style="margin: 0; font-size: 1.4em;">{{ late_count }}</h3>
+        <p style="margin: 6px 0 0;">Late</p>
+    </div>
+</div>
+
+<section style="background: #fff; border: 1px solid #dfe5eb; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+    <form method="get" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+        <label for="q" style="font-weight: bold;">Search Member:</label>
+        <input id="q" name="q" type="text" value="{{ query }}" placeholder="Name, phone, or member ID" style="flex: 1; min-width: 240px; padding: 9px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        <button type="submit">Search</button>
+    </form>
+</section>
+
+<div style="display: grid; grid-template-columns: 1.8fr 1fr; gap: 20px; align-items: start;">
+    <section>
+        <h2 style="margin-top: 0; color: #2c5f8d;">Matching Members</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Phone</th>
+                    <th>Parish</th>
+                    <th>Status</th>
+                    <th>Check In</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in members_with_status %}
+                    <tr>
+                        <td>{{ row.member.get_full_name }}</td>
+                        <td>{{ row.member.phone|default:"-" }}</td>
+                        <td>{{ row.member.parish.name }}</td>
+                        <td>
+                            {% if row.record %}
+                                {{ row.record.get_status_display }}
+                            {% else %}
+                                Not checked in
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" style="display: flex; gap: 8px; align-items: center; margin: 0;">
+                                {% csrf_token %}
+                                <input type="hidden" name="member_id" value="{{ row.member.id }}">
+                                {{ form.status }}
+                                <button type="submit" class="btn-small">Save</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #6b7280;">No members matched your search.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section style="background: #fff; border: 1px solid #dfe5eb; border-radius: 8px; padding: 16px;">
+        <h2 style="margin-top: 0; color: #2c5f8d;">Recent Check-ins</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in checkins %}
+                    <tr>
+                        <td>{{ record.member.get_full_name }}</td>
+                        <td>{{ record.get_status_display }}</td>
+                        <td>{{ record.checked_in_at|date:"H:i" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #6b7280;">No check-ins yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% endblock %}

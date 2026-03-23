@@ -49,6 +49,8 @@
                     <a href="{% url 'church:verify_certificate' %}">Verify Certificate</a>
                 </div>
             </div>
+
+            <a href="{% url 'church:attendance_sessions' %}">Attendance</a>
         {% endif %}
     {% endif %}
     
@@ -58,9 +60,15 @@
             {% if user.member and user.member.photo %}
                 <img src="{{ user.member.photo.url }}" alt="{{ user.username }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
             {% else %}
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: {% if user.member %}#28a745{% else %}#2c5f8d{% endif %}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">
+                {% if user.member %}
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: #28a745; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">
                     {{ user.username.0|upper }}
                 </div>
+                {% else %}
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: #2c5f8d; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">
+                    {{ user.username.0|upper }}
+                </div>
+                {% endif %}
             {% endif %}
             <span style="color: #2c5f8d; font-weight: bold;">{{ user.get_full_name|default:user.username }}</span>
             <span style="color: #2c5f8d; font-size: 0.8em;"></span>

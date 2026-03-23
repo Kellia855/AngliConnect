@@ -188,3 +188,52 @@ class Marriage(models.Model):
             self.certificate_number = f"MAR-{self.marriage_date.year}-{uuid.uuid4().hex[:8].upper()}"
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class ServiceSession(models.Model):
+    SERVICE_TYPE_CHOICES = [
+        ('SUNDAY', 'Sunday Service'),
+        ('MIDWEEK', 'Midweek Service'),
+        ('YOUTH', 'Youth Service'),
+        ('PRAYER', 'Prayer Meeting'),
+        ('OTHER', 'Other'),
+    ]
+
+    STATUS_CHOICES = [
+        ('OPEN', 'Open'),
+        ('CLOSED', 'Closed'),
+    ]
+
+    session_date = models.DateField()
+    service_type = models.CharField(max_length=20, choices=SERVICE_TYPE_CHOICES, default='SUNDAY')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='OPEN')
+    notes = models.TextField(blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_sessions')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-session_date', '-created_at']
+        unique_together = ['session_date', 'service_type']
+
+    def __str__(self):
+        return f"{self.get_service_type_display()} - {self.session_date}"
+
+
+class AttendanceRecord(models.Model):
+    STATUS_CHOICES = [
+        ('PRESENT', 'Present'),
+        ('LATE', 'Late'),
+    ]
+
+    session = models.ForeignKey(ServiceSession, on_delete=models.CASCADE, related_name='attendance_records')
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='attendance_records')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PRESENT')
+    checked_in_at = models.DateTimeField(auto_now_add=True)
+    checked_in_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='attendance_checkins')
+
+    class Meta:
+        ordering = ['-checked_in_at']
+        unique_together = ['session', 'member']
+
+    def __str__(self):
+        return f"{self.member.get_full_name()} - {self.session} ({self.get_status_display()})"

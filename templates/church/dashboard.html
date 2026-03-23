@@ -1,50 +1,88 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Church Management Dashboard</h1>
+<h1 style="text-align: center;">Church Management Dashboard</h1>
 
-<div style="margin-bottom: 20px;">
-    <a href="{% url 'church:export_dashboard' %}" class="button" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
-        Export to Excel
-    </a>
-</div>
+<!-- Church Overview Section -->
+<section style="margin-bottom: 32px;">
+    <h2 style="color: #2c5f8d; margin-bottom: 16px;">Church Overview</h2>
+    <div class="stats-overview" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+        <div class="stat-card" style="border-left: 4px solid #2c5f8d; padding: 18px;">
+            <h3 style="margin: 0; font-size: 2em; color: #2c5f8d;">{{ total_members }}</h3>
+            <p style="margin: 8px 0 0; color: #666; font-size: 0.95em;">Total Members</p>
+        </div>
+        
+        <div class="stat-card" style="border-left: 4px solid #8e44ad; padding: 18px;">
+            <h3 style="margin: 0; font-size: 2em; color: #8e44ad;">{{ total_dioceses }}</h3>
+            <p style="margin: 8px 0 0; color: #666; font-size: 0.95em;">Dioceses</p>
+        </div>
+        
+        <div class="stat-card" style="border-left: 4px solid #e74c3c; padding: 18px;">
+            <h3 style="margin: 0; font-size: 2em; color: #e74c3c;">{{ total_parishes }}</h3>
+            <p style="margin: 8px 0 0; color: #666; font-size: 0.95em;">Parishes</p>
+        </div>
+        
+        <div class="stat-card" style="border-left: 4px solid #27ae60; padding: 18px;">
+            <h3 style="margin: 0; font-size: 2em; color: #27ae60;">{{ total_roles }}</h3>
+            <p style="margin: 8px 0 0; color: #666; font-size: 0.95em;">Roles</p>
+        </div>
+    </div>
+</section>
 
-<div class="stats-overview">
-    <div class="stat-card">
-        <h3>{{ total_members }}</h3>
-        <p>Total Members</p>
+<!-- Sacraments Section -->
+<section style="margin-bottom: 32px;">
+    <h2 style="color: #2c5f8d; margin-bottom: 16px;">Sacraments</h2>
+    <div class="stats-overview" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+        <div class="stat-card" style="border-left: 4px solid #3498db; padding: 18px;">
+            <h3 style="margin: 0; font-size: 2em; color: #3498db;">{{ total_baptisms }}</h3>
+            <p style="margin: 8px 0 0; color: #666; font-size: 0.95em;">Baptisms</p>
+        </div>
+        
+        <div class="stat-card" style="border-left: 4px solid #f39c12; padding: 18px;">
+            <h3 style="margin: 0; font-size: 2em; color: #f39c12;">{{ total_confirmations }}</h3>
+            <p style="margin: 8px 0 0; color: #666; font-size: 0.95em;">Confirmations</p>
+        </div>
+        
+        <div class="stat-card" style="border-left: 4px solid #e91e63; padding: 18px;">
+            <h3 style="margin: 0; font-size: 2em; color: #e91e63;">{{ total_marriages }}</h3>
+            <p style="margin: 8px 0 0; color: #666; font-size: 0.95em;">Marriages</p>
+        </div>
     </div>
-    
-    <div class="stat-card">
-        <h3>{{ total_dioceses }}</h3>
-        <p>Dioceses</p>
+</section>
+
+<!-- Attendance Today Section -->
+<section style="margin-bottom: 32px; background: #f0f7ff; padding: 20px; border-radius: 8px; border: 2px solid #2c5f8d;">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+        <h2 style="color: #2c5f8d; margin: 0;">Attendance Today</h2>
+        <form method="get" action="{% url 'church:export_dashboard' %}" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <label for="period" style="font-weight: 600; color: #2c5f8d;">Period:</label>
+            <select id="period" name="period" style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 5px;">
+                <option value="weekly">Weekly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="annually">Annually</option>
+            </select>
+            <button type="submit" class="button" style="background-color: #2c5f8d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; border: none; cursor: pointer;">
+                Attendance Report
+            </button>
+        </form>
     </div>
-    
-    <div class="stat-card">
-        <h3>{{ total_parishes }}</h3>
-        <p>Parishes</p>
+    <div class="stats-overview" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+        <div class="stat-card" style="border-left: 4px solid #16a34a; padding: 18px; background: white;">
+            <h3 style="margin: 0; font-size: 2em; color: #16a34a;">{{ today_sessions_count }}</h3>
+            <p style="margin: 8px 0 0; color: #666; font-size: 0.95em;">Sessions Today</p>
+        </div>
+        
+        <div class="stat-card" style="border-left: 4px solid #2563eb; padding: 18px; background: white;">
+            <h3 style="margin: 0; font-size: 2em; color: #2563eb;">{{ today_checked_in }}</h3>
+            <p style="margin: 8px 0 0; color: #666; font-size: 0.95em;">Checked In</p>
+        </div>
+        
+        <div class="stat-card" style="border-left: 4px solid #dc2626; padding: 18px; background: white;">
+            <h3 style="margin: 0; font-size: 2em; color: #dc2626;">{{ today_late }}</h3>
+            <p style="margin: 8px 0 0; color: #666; font-size: 0.95em;">Late</p>
+        </div>
     </div>
-    
-    <div class="stat-card">
-        <h3>{{ total_roles }}</h3>
-        <p>Roles</p>
-    </div>
-    
-    <div class="stat-card">
-        <h3>{{ total_baptisms }}</h3>
-        <p>Baptisms</p>
-    </div>
-    
-    <div class="stat-card">
-        <h3>{{ total_confirmations }}</h3>
-        <p>Confirmations</p>
-    </div>
-    
-    <div class="stat-card">
-        <h3>{{ total_marriages }}</h3>
-        <p>Marriages</p>
-    </div>
-</div>
+</section>
 
 <!-- Charts Section -->
 <div class="charts-section">
@@ -62,7 +100,7 @@
 <div class="reports">
     <div class="report-section">
         <h2>Members by Diocese</h2>
-        <table>
+        <table id="dioceseTable">
             <tr>
                 <th>Diocese</th>
                 <th>Number of Members</th>
@@ -80,7 +118,7 @@
 
     <div class="report-section">
         <h2>Members by Parish</h2>
-        <table>
+        <table id="parishTable">
             <tr>
                 <th>Parish</th>
                 <th>Diocese</th>
@@ -272,13 +310,25 @@
 <script>
 // Diocese Chart
 const dioceseCtx = document.getElementById('dioceseChart').getContext('2d');
+const dioceseRows = document.querySelectorAll('#dioceseTable tr');
+const dioceseLabels = [];
+const dioceseData = [];
+
+for (let i = 1; i < dioceseRows.length; i++) {
+    const cols = dioceseRows[i].querySelectorAll('td');
+    if (cols.length >= 2) {
+        dioceseLabels.push(cols[0].textContent.trim());
+        dioceseData.push(Number(cols[1].textContent.trim()) || 0);
+    }
+}
+
 const dioceseChart = new Chart(dioceseCtx, {
     type: 'bar',
     data: {
-        labels: [{% for stat in diocese_stats %}'{{ stat.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+        labels: dioceseLabels,
         datasets: [{
             label: 'Number of Members',
-            data: [{% for stat in diocese_stats %}{{ stat.member_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+            data: dioceseData,
             backgroundColor: 'rgba(44, 95, 141, 0.8)',
             borderColor: 'rgba(44, 95, 141, 1)',
             borderWidth: 1
@@ -305,13 +355,27 @@ const dioceseChart = new Chart(dioceseCtx, {
 
 // Parish Chart (Top 10)
 const parishCtx = document.getElementById('parishChart').getContext('2d');
+const parishRows = document.querySelectorAll('#parishTable tr');
+const parishLabels = [];
+const parishData = [];
+
+for (let i = 1; i < parishRows.length && parishLabels.length < 10; i++) {
+    const cols = parishRows[i].querySelectorAll('td');
+    if (cols.length >= 3) {
+        const fullName = cols[0].textContent.trim();
+        const label = fullName.length > 30 ? fullName.slice(0, 27) + '...' : fullName;
+        parishLabels.push(label);
+        parishData.push(Number(cols[2].textContent.trim()) || 0);
+    }
+}
+
 const parishChart = new Chart(parishCtx, {
     type: 'bar',
     data: {
-        labels: [{% for stat in parish_stats|slice:":10" %}'{{ stat.name|truncatechars:30 }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+        labels: parishLabels,
         datasets: [{
             label: 'Number of Members',
-            data: [{% for stat in parish_stats|slice:":10" %}{{ stat.member_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+            data: parishData,
             backgroundColor: 'rgba(75, 192, 192, 0.8)',
             borderColor: 'rgba(75, 192, 192, 1)',
             borderWidth: 1
