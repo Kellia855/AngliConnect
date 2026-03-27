@@ -44,13 +44,16 @@ from .models import ServiceSession, AttendanceRecord
 class CustomLoginView(LoginView):
     """Custom login view that redirects members to portal and staff to dashboard"""
     template_name = 'registration/login.html'
-    
-    def get_success_url(self):
 
+    def get(self, request, *args, **kwargs):
+        from django.middleware.csrf import get_token
+        get_token(request)
+        return super().get(request, *args, **kwargs)
+
+    def get_success_url(self):
         if hasattr(self.request.user, 'member'):
             return reverse_lazy('church:member_portal')
         else:
-            
             return reverse_lazy('church:dashboard')
 
 

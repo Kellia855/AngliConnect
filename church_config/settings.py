@@ -101,20 +101,20 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+    
+TIME_ZONE = 'Africa/Kigali'
 
 USE_I18N = True
 
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
+# Static files 
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Media files (User uploaded content)
+# Media files 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -126,3 +126,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login/'
 # LOGIN_REDIRECT_URL handled by CustomLoginView (members -> portal, staff -> dashboard)
 LOGOUT_REDIRECT_URL = '/login/'
+
+# CSRF Settings - Fix for CSRF token errors
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
